@@ -36,3 +36,25 @@ jobs:
           push: true
           tags: |
             azaleh/diplodocu-backend:${{ env.DATE_TAG }}
+
+      - name: Clone manifest repository
+        uses: actions/checkout@v4
+        with:
+          repository: Maasym/portfolio-manifests
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          path: manifest-repo
+
+      - name: Update manifest with new image tag
+        run: |
+          sed -i 's|^\(\s*image:\s*\).*|\1azaleh/diplodocu-backend:${{ env.DATE_TAG }}|' manifest-repo/diplodocu/backend/deployment.yaml
+
+      - name: Commit and push updated manifest
+        working-directory: manifest-repo
+        run: |
+          git config --global user.email "you@example.com"
+          git config --global user.name "kitzune-no-aki"
+          git add diplodocu/backend/deployment.yaml
+          git commit -m "Update image tag to ${{ env.DATE_TAG }}"
+          git push
+        env:
+          REPO_ACCESS_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}

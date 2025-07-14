@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	"github.com/kitzune-no-aki/diplodocu/backend/internal/config"
 	"github.com/kitzune-no-aki/diplodocu/backend/internal/database"
 	"github.com/kitzune-no-aki/diplodocu/backend/internal/handlers"
@@ -13,12 +12,6 @@ import (
 )
 
 func main() {
-	// Load environment variables
-	err := godotenv.Load()
-	if err != nil {
-		log.Println("Warning: .env file not found, proceeding with environment variables.")
-	}
-
 	// Initialization
 	utils.InitKeycloak()
 	db := setupDatabase()
@@ -29,7 +22,7 @@ func main() {
 
 	// Start server
 	log.Println("Starting server on :8080")
-	err = router.Run(":8080")
+	err := router.Run(":8080")
 	if err != nil {
 		log.Fatalf("Server failed to start: %v", err)
 	}
