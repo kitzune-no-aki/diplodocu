@@ -16,7 +16,7 @@ func main() {
 	// Load environment variables
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Println("Warning: .env file not found, proceeding with environment variables.")
 	}
 
 	// Initialization
@@ -55,7 +55,7 @@ func createRouter(db *gorm.DB) *gin.Engine {
 
 	// CORS configuration (adjust as needed)
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173"},
+		AllowOrigins:     []string{"https://diplodocu.mpech.dev"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Authorization", "Content-Type"},
 		ExposeHeaders:    []string{"Content-Length"},
