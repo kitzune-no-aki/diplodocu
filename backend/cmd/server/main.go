@@ -65,7 +65,7 @@ func createRouter(db *gorm.DB) *gin.Engine {
 }
 
 func setupRoutes(router *gin.Engine) {
-	api := router.Group("/")
+	api := router.Group("/api")
 
 	// Protected routes group
 	protected := api.Group("")
