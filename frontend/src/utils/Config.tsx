@@ -1,5 +1,5 @@
 const config = {
-    apiBaseUrl: "http://localhost:8080",
+    apiBaseUrl: "https://diplodocu.mpech.dev/api",
 };
 
 export default config;
