@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import keycloak from "../utils/Keycloak";
+import config from "./Config.tsx";
 
 interface UserProfile {
     username?: string;
@@ -36,6 +37,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
         roles: [],
     });
 
+    const syncUserToBackend = async () => {
+        try {
+            const response = await fetch(`${config.apiBaseUrl}/sync-user`, {
+                headers: {
+                    Authorization: `Bearer ${keycloak.token}`,
+                },
+            });
+
+            if (!response.ok) throw new Error("Sync failed");
+            console.log("User synced to backend");
+        } catch (error) {
+            console.error("User sync error:", error);
+        }
+    };
+
     useEffect(() => {
         const initializeAuth = async () => {
             try {
@@ -46,6 +62,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
                 if (authenticated) {
                     const userProfile = await keycloak.loadUserProfile();
+
+                    await syncUserToBackend();
 
                     setAuthState({
                         isAuthenticated: true,
@@ -71,8 +89,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         };
 
         return () => {
-            // @ts-ignore
-            keycloak.onTokenExpired = null;
+            keycloak.onTokenExpired = undefined;
         };
     }, []);
 
