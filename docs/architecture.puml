@@ -1,0 +1,113 @@
+@startuml Diplodocu Architecture
+
+skinparam backgroundColor #FEFEFE
+skinparam componentStyle rectangle
+
+title Diplodocu - System Architecture
+
+package "Frontend (React + Vite)" as Frontend {
+    component [App.tsx] as App
+    component [AuthProvider] as AuthProv
+
+    package "Pages" {
+        component [Home] as HomePage
+        component [MyTable] as MyTablePage
+        component [NotFound] as NotFoundPage
+        component [Unauthorized] as UnauthorizedPage
+    }
+
+    package "Components" {
+        component [Navbar] as NavbarComp
+        component [ProtectedRoute] as ProtectedRouteComp
+        component [ProductModal] as ProductModal
+        component [DeleteConfirmationModal] as DeleteModal
+    }
+
+    package "Utils" {
+        component [Keycloak Client] as KeycloakClient
+        component [AuthContext] as AuthContext
+        component [Config] as FrontendConfig
+    }
+}
+
+package "Backend (Go + Gin)" as Backend {
+    component [main.go] as MainGo
+
+    package "Handlers" {
+        component [BookHandler] as BookH
+        component [MangaHandler] as MangaH
+        component [SpielHandler] as SpielH
+        component [FilmserieHandler] as FilmserieH
+        component [CollectionHandler] as CollectionH
+        component [AuthHandler] as AuthH
+    }
+
+    package "Middleware" {
+        component [AuthMiddleware] as AuthMW
+        component [CORS] as CORS
+    }
+
+    package "Database" {
+        component [ConnectDB] as ConnectDB
+        component [SyncUser] as SyncUser
+        component [AutoMigrate] as AutoMigrate
+    }
+
+    package "Models" {
+        component [Produkt] as ProduktModel
+        component [Buch] as BuchModel
+        component [Manga] as MangaModel
+        component [Spiel] as SpielModel
+        component [Filmserie] as FilmserieModel
+        component [Webuser] as WebuserModel
+        component [Sammlung] as SammlungModel
+    }
+}
+
+cloud "External Services" as External {
+    component [Keycloak\nAuth Server] as Keycloak
+    database [PostgreSQL] as PostgreSQL
+}
+
+App --> AuthProv : wraps
+AuthProv --> AuthContext
+AuthContext --> KeycloakClient
+KeycloakClient --> Keycloak : OAuth2/OIDC
+
+HomePage --> NavbarComp
+MyTablePage --> NavbarComp
+MyTablePage --> ProductModal
+MyTablePage --> DeleteModal
+
+ProtectedRouteComp --> AuthContext : checks auth
+ProtectedRouteComp --> UnauthorizedPage : if not auth
+
+MyTablePage ..> FrontendConfig : API URL
+MyTablePage --> Backend : REST API
+
+MainGo --> CORS
+MainGo --> AuthMW
+AuthMW --> Keycloak : validate JWT
+AuthMW --> SyncUser
+
+BookH --> ProduktModel
+BookH --> BuchModel
+MangaH --> ProduktModel
+MangaH --> MangaModel
+SpielH --> ProduktModel
+SpielH --> SpielModel
+FilmserieH --> ProduktModel
+FilmserieH --> FilmserieModel
+CollectionH --> SammlungModel
+CollectionH --> WebuserModel
+
+ConnectDB --> PostgreSQL
+AutoMigrate --> PostgreSQL
+
+legend right
+  **Design Resources**
+  [[https://www.figma.com/design/imZckVrBMdCDhVwXgcBDMq/Bibliothek?node-id=0-1&t=lq9hre5oViph2Naq-1 Figma Wireframes]]
+  [[https://www.figma.com/proto/imZckVrBMdCDhVwXgcBDMq/Bibliothek?node-id=0-1&t=lq9hre5oViph2Naq-1 Figma Prototype]]
+endlegend
+
+@enduml

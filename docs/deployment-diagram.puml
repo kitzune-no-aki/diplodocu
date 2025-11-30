@@ -1,0 +1,56 @@
+@startuml Diplodocu Deployment Diagram
+
+skinparam backgroundColor #FEFEFE
+
+title Diplodocu - Deployment Architecture
+
+node "User Browser" as Browser {
+    component [React SPA] as ReactApp
+}
+
+node "GitHub Actions" as GHA {
+    component [CI/CD Pipeline] as CICD
+}
+
+cloud "Container Registry" as Registry {
+    artifact [Frontend Image] as FrontendImg
+    artifact [Backend Image] as BackendImg
+}
+
+node "Docker Host" as K8s {
+    node "Frontend Container" as FrontendNode {
+        component [Nginx] as Nginx
+        component [Static Files] as StaticFiles
+    }
+
+    node "Backend Container" as BackendNode {
+        component [Go Binary] as GoBinary
+        component [Gin Router] as GinRouter
+    }
+}
+
+node "External Services" as External {
+    database "PostgreSQL" as Postgres
+
+    component [Keycloak] as Keycloak
+}
+
+Browser --> FrontendNode : HTTPS\ndiplodocu.mpech.dev
+FrontendNode --> BackendNode : REST API\n/api/*
+BackendNode --> Postgres : GORM
+BackendNode --> Keycloak : JWKS\nToken Validation
+Browser --> Keycloak : OAuth2\nLogin/Logout
+
+CICD --> Registry : Push images
+Registry --> K8s : Pull images
+
+note right of FrontendNode
+  Dockerfile builds React
+  serves via Nginx
+end note
+
+note right of BackendNode
+  Go binary on port 8080
+end note
+
+@enduml

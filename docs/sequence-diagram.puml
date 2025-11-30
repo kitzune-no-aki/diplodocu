@@ -1,0 +1,61 @@
+@startuml Diplodocu Sequence Diagram
+
+skinparam backgroundColor #FEFEFE
+
+title Diplodocu - Authentication and Product Creation Flow
+
+actor User
+participant "React Frontend" as Frontend
+participant "Keycloak" as Keycloak
+participant "Go Backend" as Backend
+database "PostgreSQL" as DB
+
+== Authentication Flow ==
+
+User -> Frontend: Open App
+Frontend -> Keycloak: Check SSO (init)
+Keycloak --> Frontend: Not authenticated
+
+User -> Frontend: Click Login
+Frontend -> Keycloak: Redirect to login
+User -> Keycloak: Enter credentials
+Keycloak --> Frontend: Redirect with token
+Frontend -> Frontend: Store token
+
+Frontend -> Backend: GET /api/sync-user\n(with JWT)
+Backend -> Backend: Validate JWT via JWKS
+Backend -> DB: Upsert Webuser
+DB --> Backend: User synced
+Backend --> Frontend: 200 OK
+
+== Create Product Flow ==
+
+User -> Frontend: Click Add New
+Frontend -> Frontend: Open ProductModal
+
+User -> Frontend: Fill form and submit
+Frontend -> Backend: POST /api/books\n{name, autor, ...}
+Backend -> Backend: Validate request
+Backend -> DB: BEGIN TRANSACTION
+Backend -> DB: INSERT INTO produkte
+DB --> Backend: product.ID = 1
+Backend -> DB: INSERT INTO buch
+DB --> Backend: OK
+Backend -> DB: COMMIT
+Backend --> Frontend: 201 Created
+Frontend -> Frontend: Close modal
+Frontend -> Frontend: Refresh product list
+
+== Protected Route Access ==
+
+User -> Frontend: Navigate to /mytable
+Frontend -> Frontend: ProtectedRoute checks auth
+alt Authenticated
+    Frontend -> Frontend: Render MyTable
+    Frontend -> Backend: GET /api/books, mangas, ...
+    Backend --> Frontend: Product lists
+else Not Authenticated
+    Frontend -> Frontend: Render Unauthorized page
+end
+
+@enduml

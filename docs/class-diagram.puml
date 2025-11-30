@@ -1,0 +1,98 @@
+@startuml Diplodocu Class Diagram
+
+skinparam backgroundColor #FEFEFE
+skinparam classAttributeIconSize 0
+
+title Diplodocu - Database Entity Relationship Diagram
+
+class Produkt {
+    +ID : uint <<PK>>
+    +Name : string
+    +Nummer : *int
+    +Art : string
+    --
+    Sammlungen : []Sammlung
+}
+
+class Buch {
+    +ProdukteID : uint <<PK, FK>>
+    +Autor : *string
+    +Sprache : *string
+    +Genre : *string
+    --
+    +Produkt : Produkt
+}
+
+class Manga {
+    +ProdukteID : uint <<PK, FK>>
+    +Mangaka : *string
+    +Sprache : *string
+    +Genre : *string
+    --
+    +Produkt : Produkt
+}
+
+class Spiel {
+    +ProdukteID : uint <<PK, FK>>
+    +Konsole : *string
+    +Genre : *string
+    --
+    +Produkt : Produkt
+}
+
+class Filmserie {
+    +ProdukteID : uint <<PK, FK>>
+    +Art : *string <<enum: Film|Serie>>
+    +Genre : *string
+    --
+    +Produkt : Produkt
+}
+
+class Webuser {
+    +ID : string <<PK>>
+    +Name : *string
+    --
+    +Sammlungen : []Sammlung
+}
+
+class Sammlung {
+    +ID : uint <<PK>>
+    +WebuserID : string <<FK>>
+    +Name : *string
+    --
+    +Webuser : Webuser
+    +Produkte : []Produkt
+}
+
+class SammlungProdukt {
+    +SammlungID : uint <<PK, FK>>
+    +ProduktID : uint <<PK, FK>>
+}
+
+Produkt "1" <-- "0..1" Buch : extends
+Produkt "1" <-- "0..1" Manga : extends
+Produkt "1" <-- "0..1" Spiel : extends
+Produkt "1" <-- "0..1" Filmserie : extends
+
+Webuser "1" --> "*" Sammlung : owns
+
+Sammlung "*" -- "*" Produkt
+(Sammlung, Produkt) .. SammlungProdukt
+
+note right of Produkt
+  Base product type.
+  Art discriminator:
+  Buch, Manga, Spiel, Filmserie
+end note
+
+note right of Webuser
+  Synced from Keycloak.
+  ID = Keycloak user ID
+end note
+
+note bottom of SammlungProdukt
+  Junction table for
+  many-to-many relationship
+end note
+
+@enduml
