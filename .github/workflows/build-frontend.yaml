@@ -1,12 +1,9 @@
-name: CI/CD Frontend
-
-on:
-  workflow_dispatch:
+name: Minimal Test
+on: [workflow_dispatch, push] # Add push to trigger on commits
 
 jobs:
-  build-and-push:
+  test:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Test Step
+        run: echo "Hello, runner is working!"
