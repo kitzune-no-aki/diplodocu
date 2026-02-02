@@ -1,11 +1,6 @@
 name: CI/CD Frontend
 
 on:
-  push:
-    paths:
-      - 'frontend/**'
-    branches:
-      - main
   workflow_dispatch:
 
 jobs:
