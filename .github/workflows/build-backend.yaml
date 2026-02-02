@@ -33,11 +33,3 @@ jobs:
       - name: Get current date and time
         id: date
         run: echo "DATE_TAG=$(date -u +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v6
-        with:
-          context: backend
-          push: true
-          tags: |
-            ghcr.io/kitzune-no-aki/diplodocu:backend-${{ env.DATE_TAG }}
