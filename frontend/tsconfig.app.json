@@ -23,4 +23,11 @@
     "noUncheckedSideEffectImports": true
   },
   "include": ["src"]
+  "exclude": [
+    "src/test/**/*",          // Excludes all files in src/test
+    "src/**/*.test.ts",       // Excludes all .test.ts files
+    "src/**/*.test.tsx",      // Excludes all .test.tsx files
+    "src/**/*.spec.ts",       // Excludes all .spec.ts files (if you use Spec naming)
+    "src/**/*.spec.tsx"       // Excludes all .spec.tsx files
+  ]
 }
