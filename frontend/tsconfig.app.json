@@ -22,7 +22,7 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src"]
+  "include": ["src"],
   "exclude": [
     "src/test/**/*",          // Excludes all files in src/test
     "src/**/*.test.ts",       // Excludes all .test.ts files
